@@ -13,13 +13,17 @@ export function getDataOfSelectedUser(user) {
             finalUserData.push(`Профессия: ${value.name}`);
         }
         if (Array.isArray(value)) {
-            finalUserData.push(value.map((item) => {
-                return (
-                    <span className={"badge bg-" + item.color + " ms-1"} key={item.name}>
-                        {item.name}
-                    </span>
-                );
-            })
+            finalUserData.push(
+                value.map((item) => {
+                    return (
+                        <span
+                            className={"badge bg-" + item.color + " ms-1"}
+                            key={item.name}
+                        >
+                            {item.name}
+                        </span>
+                    );
+                })
             );
         }
         if (key === "completedMeetings") {

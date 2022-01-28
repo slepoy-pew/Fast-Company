@@ -36,11 +36,11 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
                         onClick={
                             columns[column].path
                                 ? () => {
-                                    handleSort(
-                                        columns[column].path,
-                                        columns[column].name
-                                    );
-                                }
+                                      handleSort(
+                                          columns[column].path,
+                                          columns[column].name
+                                      );
+                                  }
                                 : undefined
                         }
                         {...{ role: columns[column].path && "button" }}

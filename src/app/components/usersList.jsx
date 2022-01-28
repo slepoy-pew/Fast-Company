@@ -7,15 +7,16 @@ import GroupList from "./groupList";
 import SearchStatus from "./searchStatus";
 import UsersTable from "./usersTable";
 import _ from "lodash";
+import SearchUsers from "./searchUsers";
 
 const UsersList = ({ onGetUsersId }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfession] = useState();
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ iter: "name", order: "asc" });
-    const pageSize = 4;
-
     const [data, setData] = useState([]);
+    const [foundUsers, setFoundUsers] = useState([]);
+    const pageSize = 4;
 
     useEffect(() => {
         api.users.fetchAll().then((data) => setData(data));
@@ -26,6 +27,14 @@ const UsersList = ({ onGetUsersId }) => {
     useEffect(() => {
         setUsers(data);
     }, [data]);
+
+    useEffect(() => {
+        api.professions.fetchAll().then((data) => setProfession(data));
+    }, []);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedProf]);
 
     const handleDelete = (userId) => {
         setUsers(users.filter((user) => user._id !== userId));
@@ -42,14 +51,6 @@ const UsersList = ({ onGetUsersId }) => {
         );
     };
 
-    useEffect(() => {
-        api.professions.fetchAll().then((data) => setProfession(data));
-    }, []);
-
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [selectedProf]);
-
     const handleProfessionSelect = (item) => {
         setSelectedProf(item);
     };
@@ -62,11 +63,17 @@ const UsersList = ({ onGetUsersId }) => {
         setSortBy(item);
     };
 
+    const handleShowChosenUsers = (chosenUsers) => {
+        setFoundUsers(chosenUsers);
+    };
+
+    if (selectedProf && foundUsers.length !== 0) setFoundUsers([]);
     if (users) {
         const filteredUsers = selectedProf
-            ? users.filter((user) =>
-                JSON.stringify(user.profession) ===
-                JSON.stringify(selectedProf)
+            ? users.filter(
+                (user) =>
+                    JSON.stringify(user.profession) ===
+                    JSON.stringify(selectedProf)
             )
             : users;
         const count = filteredUsers.length;
@@ -77,7 +84,10 @@ const UsersList = ({ onGetUsersId }) => {
             [sortBy.order]
         );
 
-        const usersCrop = paginate(sortedUsers, currentPage, pageSize);
+        const usersCrop =
+            foundUsers.length !== 0
+                ? foundUsers
+                : paginate(sortedUsers, currentPage, pageSize);
 
         const clearFilter = () => {
             setSelectedProf();
@@ -101,7 +111,15 @@ const UsersList = ({ onGetUsersId }) => {
                     </div>
                 )}
                 <div className="d-flex flex-column">
-                    <SearchStatus length={count} />
+                    <SearchStatus
+                        length={count}
+                        foundUsers={foundUsers.length}
+                    />
+                    <SearchUsers
+                        users={data}
+                        onShowChosenUsers={handleShowChosenUsers}
+                        selectedItem={selectedProf}
+                    />
                     {count > 0 && (
                         <UsersTable
                             users={usersCrop}
@@ -124,7 +142,6 @@ const UsersList = ({ onGetUsersId }) => {
             </>
         );
     }
-    // return "Loading...";
 };
 
 UsersList.propTypes = {

@@ -19,9 +19,10 @@ const UserPage = ({ userId }) => {
 
     return (
         <>
-            {!dataUser
-                ? <h1>loading...</h1>
-                : <div>
+            {!dataUser ? (
+                <h1>loading...</h1>
+            ) : (
+                <div>
                     <ul className="list-group list-group-flush">
                         {getDataOfSelectedUser(dataUser).map((item) => (
                             <li className="list-group-item" key={item}>
@@ -37,7 +38,7 @@ const UserPage = ({ userId }) => {
                         Все пользователи
                     </button>
                 </div>
-            }
+            )}
         </>
     );
 };

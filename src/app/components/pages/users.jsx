@@ -18,13 +18,14 @@ const Users = () => {
                     exact
                     render={() => <UsersList onGetUsersId={handleGetUsersId} />}
                 />
-                {selectedUserId
-                    ? <Route
+                {selectedUserId ? (
+                    <Route
                         path={`/users/${selectedUserId}`}
                         render={() => <UserPage userId={selectedUserId} />}
                     />
-                    : ""
-                }
+                ) : (
+                    ""
+                )}
             </Switch>
         </div>
     );
