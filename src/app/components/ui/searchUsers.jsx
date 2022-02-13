@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import SearchField from "./searchField";
+import SearchField from "../common/form/searchField";
 
 const SearchUsers = ({ users, onShowChosenUsers, selectedItem }) => {
     const [dataInput, setDataInput] = useState("");
@@ -13,12 +13,12 @@ const SearchUsers = ({ users, onShowChosenUsers, selectedItem }) => {
         const chosenUsers =
             users && dataInput
                 ? users.filter((item) => {
-                    return (
-                        item.name
-                            .toLowerCase()
-                            .indexOf(dataInput.toLowerCase()) > -1
-                    );
-                })
+                      return (
+                          item.name
+                              .toLowerCase()
+                              .indexOf(dataInput.toLowerCase()) > -1
+                      );
+                  })
                 : [];
         onShowChosenUsers(chosenUsers);
     };

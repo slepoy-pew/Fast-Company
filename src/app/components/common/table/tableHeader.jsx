@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { toggleSortPointer } from "../utils/toggleSortPointer";
+import { toggleSortPointer } from "../../../utils/toggleSortPointer";
 
 const TableHeader = ({ onSort, selectedSort, columns }) => {
     const [pointerOrder, setPointerOrder] = useState("");
@@ -36,11 +36,11 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
                         onClick={
                             columns[column].path
                                 ? () => {
-                                      handleSort(
-                                          columns[column].path,
-                                          columns[column].name
-                                      );
-                                  }
+                                    handleSort(
+                                        columns[column].path,
+                                        columns[column].name
+                                    );
+                                }
                                 : undefined
                         }
                         {...{ role: columns[column].path && "button" }}

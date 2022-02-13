@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { paginate } from "../utils/paginate";
-import Pagination from "./pagination";
 import PropTypes from "prop-types";
-import api from "../api";
-import GroupList from "./groupList";
-import SearchStatus from "./searchStatus";
-import UsersTable from "./usersTable";
 import _ from "lodash";
-import SearchUsers from "./searchUsers";
+import { paginate } from "../../../utils/paginate";
+import Pagination from "../../common/pagination";
+import api from "../../../api";
+import GroupList from "../../common/groupList";
+import SearchStatus from "../../ui/searchStatus";
+import UsersTable from "../../ui/usersTable";
+import SearchUsers from "../../ui/searchUsers";
 
-const UsersList = ({ onGetUsersId }) => {
+const UsersListPage = ({ onGetUsersId }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfession] = useState();
     const [selectedProf, setSelectedProf] = useState();
@@ -71,10 +71,10 @@ const UsersList = ({ onGetUsersId }) => {
     if (users) {
         const filteredUsers = selectedProf
             ? users.filter(
-                (user) =>
-                    JSON.stringify(user.profession) ===
-                    JSON.stringify(selectedProf)
-            )
+                  (user) =>
+                      JSON.stringify(user.profession) ===
+                      JSON.stringify(selectedProf)
+              )
             : users;
         const count = filteredUsers.length;
 
@@ -144,8 +144,8 @@ const UsersList = ({ onGetUsersId }) => {
     }
 };
 
-UsersList.propTypes = {
+UsersListPage.propTypes = {
     onGetUsersId: PropTypes.func.isRequired
 };
 
-export default UsersList;
+export default UsersListPage;
