@@ -1,17 +1,16 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import BookMark from "../common/bookmark";
 import Qualities from "./qualities";
 import Table from "../common/table";
+import { Link } from "react-router-dom";
 
-const UsersTable = ({
+const UserTable = ({
     users,
     onSort,
     selectedSort,
     onToggleBookMark,
     onDelete,
-    onGetUsersId,
     ...rest
 }) => {
     const columns = {
@@ -19,13 +18,7 @@ const UsersTable = ({
             path: "name",
             name: "Имя",
             component: (user) => (
-                <Link
-                    to={`/users/${user._id}`}
-                    className="link-dark"
-                    onClick={() => onGetUsersId(user._id)}
-                >
-                    {user.name}
-                </Link>
+                <Link to={`/users/${user._id}`}>{user.name}</Link>
             )
         },
         qualities: {
@@ -35,7 +28,7 @@ const UsersTable = ({
         professions: { path: "profession.name", name: "Профессия" },
         completedMeetings: {
             path: "completedMeetings",
-            name: "Встретился,раз"
+            name: "Встретился, раз"
         },
         rate: { path: "rate", name: "Оценка" },
         bookmark: {
@@ -51,15 +44,14 @@ const UsersTable = ({
         delete: {
             component: (user) => (
                 <button
-                    className="btn btn-danger"
                     onClick={() => onDelete(user._id)}
+                    className="btn btn-danger"
                 >
                     delete
                 </button>
             )
         }
     };
-
     return (
         <Table
             onSort={onSort}
@@ -70,13 +62,12 @@ const UsersTable = ({
     );
 };
 
-UsersTable.propTypes = {
+UserTable.propTypes = {
     users: PropTypes.array.isRequired,
     onSort: PropTypes.func.isRequired,
     selectedSort: PropTypes.object.isRequired,
     onToggleBookMark: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
-    onGetUsersId: PropTypes.func.isRequired
+    onDelete: PropTypes.func.isRequired
 };
 
-export default UsersTable;
+export default UserTable;

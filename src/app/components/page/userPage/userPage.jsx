@@ -1,64 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { useHistory } from "react-router-dom";
 import api from "../../../api";
-import { dataOfSelectedUser } from "../../../utils/dataOfSelectedUser";
+import UserCard from "../../ui/userCard";
+import QualitiesCard from "../../ui/qualitiesCard";
+import MeetingsCard from "../../ui/meetingsCard";
+import Comments from "../../ui/comments";
 
-const UserPage = ({ userId, onEditUser, updateUser }) => {
-
-    const [dataUser, setDataUser] = useState();
+const UserPage = ({ userId }) => {
+    const [user, setUser] = useState();
 
     useEffect(() => {
-        api.users.getById(userId).then((data) => setDataUser(data));
+        api.users.getById(userId).then((data) => setUser(data));
     }, []);
 
-    const history = useHistory();
-
-    const handleShowAllUsers = () => {
-        history.push("/users");
-    };
-
-    return (
-        <>
-            {!dataUser ? (
-                <h1>loading...</h1>
-            ) : (
-                <div>
-                    <ul className="list-group list-group-flush">
-                        {dataOfSelectedUser(
-                            updateUser ? updateUser : dataUser
-                        ).map((item) => (
-                            <li className="list-group-item" key={item}>
-                                {item}
-                            </li>
-                        ))}
-                    </ul>
-                    <Link
-                        to={`/users/${userId}/edit`}
-                        role="button"
-                        className="btn btn-outline-dark btn-lg mt-3 me-3"
-                        onClick={() => onEditUser(dataUser)}
-                    >
-                        ИЗМЕНИТЬ
-                    </Link>
-                    <button
-                        type="button"
-                        className="btn btn-outline-dark btn-lg mt-3"
-                        onClick={() => handleShowAllUsers()}
-                    >
-                        ВСЕ ПОЛЬЗОВАТЕЛИ
-                    </button>
+    if (user) {
+        return (
+            <div className="container">
+                <div className="row gutters-sm">
+                    <div className="col-md-4 mb-3">
+                        <UserCard user={user} />
+                        <QualitiesCard data={user.qualities} />
+                        <MeetingsCard value={user.completedMeetings} />
+                    </div>
+                    <div className="col-md-8">
+                        <Comments />
+                    </div>
                 </div>
-            )}
-        </>
-    );
+            </div>
+        );
+    } else {
+        return <h1>Loading</h1>;
+    }
 };
 
 UserPage.propTypes = {
-    userId: PropTypes.string.isRequired,
-    onEditUser: PropTypes.func.isRequired,
-    updateUser: PropTypes.object
+    userId: PropTypes.string.isRequired
 };
 
 export default UserPage;

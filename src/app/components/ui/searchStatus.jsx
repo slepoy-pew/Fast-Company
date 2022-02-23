@@ -1,8 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const SearchStatus = ({ length, foundUsers }) => {
-    length = foundUsers > 0 ? foundUsers : length;
+const SearchStatus = ({ length }) => {
     const renderPhrase = (number) => {
         const lastOne = Number(number.toString().slice(-1));
         if (number > 4 && number < 15) {
@@ -12,11 +11,10 @@ const SearchStatus = ({ length, foundUsers }) => {
         if ([2, 3, 4].indexOf(lastOne) >= 0) return "человека тусанут";
         return "человек тусанет";
     };
-
     return (
-        <h2 className="mb-2">
+        <h2>
             <span
-                className={"badge " + (length > 0 ? "bg-success" : "bg-danger")}
+                className={"badge " + (length > 0 ? "bg-primary" : "bg-danger")}
             >
                 {length > 0
                     ? `${length + " " + renderPhrase(length)}   с тобой сегодня`
@@ -25,10 +23,8 @@ const SearchStatus = ({ length, foundUsers }) => {
         </h2>
     );
 };
-
 SearchStatus.propTypes = {
-    length: PropTypes.number.isRequired,
-    foundUsers: PropTypes.number.isRequired
+    length: PropTypes.number
 };
 
 export default SearchStatus;

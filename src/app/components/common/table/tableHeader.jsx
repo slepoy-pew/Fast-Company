@@ -1,55 +1,44 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import { toggleSortPointer } from "../../../utils/toggleSortPointer";
 
 const TableHeader = ({ onSort, selectedSort, columns }) => {
-    const [pointerOrder, setPointerOrder] = useState("");
-    const [pointerName, setPointerName] = useState("");
-
-    const handleSort = (itemPath, itemName) => {
-        if (selectedSort.path === itemPath) {
+    const handleSort = (item) => {
+        if (selectedSort.path === item) {
             onSort({
                 ...selectedSort,
                 order: selectedSort.order === "asc" ? "desc" : "asc"
             });
-            pointerSort(
-                selectedSort.order === "asc" ? "desc" : "asc",
-                itemName
-            );
         } else {
-            onSort({ path: itemPath, order: "asc" });
-            pointerSort("asc", itemName);
+            onSort({ path: item, order: "asc" });
         }
     };
-
-    const pointerSort = (order, name) => {
-        setPointerOrder(order);
-        setPointerName(name);
+    const rendeSortArrow = (selectedSort, currentPath) => {
+        if (selectedSort.path === currentPath) {
+            if (selectedSort.order === "asc") {
+                return <i className="bi bi-caret-down-fill"></i>;
+            } else {
+                return <i className="bi bi-caret-up-fill"></i>;
+            }
+        }
+        return null;
     };
 
     return (
-        <thead className="table-dark">
+        <thead>
             <tr>
                 {Object.keys(columns).map((column) => (
                     <th
                         key={column}
                         onClick={
                             columns[column].path
-                                ? () => {
-                                    handleSort(
-                                        columns[column].path,
-                                        columns[column].name
-                                    );
-                                }
+                                ? () => handleSort(columns[column].path)
                                 : undefined
                         }
                         {...{ role: columns[column].path && "button" }}
                         scope="col"
                     >
-                        {columns[column].name}
-                        {columns[column].name === pointerName
-                            ? toggleSortPointer(pointerOrder)
-                            : undefined}
+                        {columns[column].name}{" "}
+                        {rendeSortArrow(selectedSort, columns[column].path)}
                     </th>
                 ))}
             </tr>

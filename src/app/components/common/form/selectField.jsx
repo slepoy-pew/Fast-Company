@@ -11,7 +11,6 @@ const SelectField = ({
     error
 }) => {
     const handleChange = ({ target }) => {
-        console.log("SelectField:", target);
         onChange({ name: target.name, value: target.value });
     };
 
@@ -43,8 +42,8 @@ const SelectField = ({
                     {defaultOption}
                 </option>
                 {optionsArray &&
-                    optionsArray.map((option) => (
-                        <option value={option.name} key={option._id}>
+                    optionsArray.map((option, index) => (
+                        <option value={option.name} key={option.name}>
                             {option.name}
                         </option>
                     ))}
