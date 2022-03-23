@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { validator } from "../../utils/validator";
 import TextField from "../common/form/textField";
 import CheckBoxField from "../common/form/checkBoxField";
+import { useAuth } from "../../hooks/useAuth";
+import { useHistory } from "react-router-dom";
 
 const LoginForm = () => {
     const [data, setData] = useState({
@@ -9,13 +11,18 @@ const LoginForm = () => {
         password: "",
         stayOn: false
     });
+
+    const history = useHistory();
+    const { logIn } = useAuth();
     const [errors, setErrors] = useState({});
+    const [enterError, setEnterError] = useState(null);
 
     const handleChange = (target) => {
         setData((prevState) => ({
             ...prevState,
             [target.name]: target.value
         }));
+        setEnterError(null);
     };
 
     const validatorConfig = {
@@ -23,20 +30,11 @@ const LoginForm = () => {
             isRequired: {
                 message: "Электронная почта обязательна для заполнения"
             },
-            isEmail: { message: "Email введён некорректно" }
         },
         password: {
-            isRequired: { message: "Пароль обязателен для заполнения" },
-            isCapitalSymbol: {
-                message: "Пароль должен содержать хотя бы одну заглавную букву"
+            isRequired: {
+                message: "Пароль обязателен для заполнения"
             },
-            isContainDigit: {
-                message: "Пароль должен содержать хотя бы одно число"
-            },
-            min: {
-                message: "Пароль должен состоять минимум из 8 символов",
-                value: 8
-            }
         }
     };
 
@@ -52,10 +50,17 @@ const LoginForm = () => {
 
     const isValid = Object.keys(errors).length === 0;
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const isValid = validate();
         if (!isValid) return;
+
+        try {
+            await logIn(data);
+            history.push("/");
+        } catch (error) {
+            setEnterError(error.message);
+        }
     };
 
     return (
@@ -82,9 +87,10 @@ const LoginForm = () => {
             >
                 Оставаться в системе
             </CheckBoxField>
+            {enterError && <p className="text-danger">{enterError}</p>}
             <button
                 type="submit"
-                disabled={!isValid}
+                disabled={!isValid || enterError}
                 className="btn btn-primary w-100 mx-auto"
             >
                 Submit

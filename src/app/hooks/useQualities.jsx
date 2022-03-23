@@ -38,18 +38,17 @@ export const QualitiesProvider = ({ children }) => {
         }
     }
 
+    function errorCatcher(error) {
+        const { message } = error.response.data;
+        setError(message);
+        setLoading(false);
+    }
     useEffect(() => {
         if (error !== null) {
             toast(error);
             setError(null);
         }
     }, [error]);
-
-    function errorCatcher(error) {
-        const { message } = error.response.data;
-        setError(message);
-        setLoading(false);
-    }
 
     return (
         <QualitiesContex.Provider value={{ isLoading, qualities, getQualities }}>

@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 const ProfessionContext = React.createContext();
 
-export const useProfessons = () => {
+export const useProfessions = () => {
     return useContext(ProfessionContext);
 };
 
@@ -13,7 +13,7 @@ export const ProfessionProvider = ({ children }) => {
     const [isLoading, setLoading] = useState(true);
     const [profession, setProfession] = useState([]);
     const [error, setError] = useState(null);
-    // console.log("profession:", profession);
+
     useEffect(() => {
         getProfessionsList();
     }, []);
