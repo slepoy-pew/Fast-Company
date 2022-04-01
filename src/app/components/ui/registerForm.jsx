@@ -12,30 +12,26 @@ import { useHistory } from "react-router-dom";
 
 const RegisterForm = () => {
     const history = useHistory();
-
     const [data, setData] = useState({
         email: "",
         password: "",
         profession: "",
         sex: "male",
+        name: "",
         qualities: [],
         licence: false
     });
-
     const { signUp } = useAuth();
-
     const { qualities } = useQualities();
     const qualitiesList = qualities.map((q) => ({
         label: q.name,
         value: q._id
     }));
-
-    const { profession } = useProfessions();
-    const professionsList = profession.map((p) => ({
+    const { professions } = useProfessions();
+    const professionsList = professions.map((p) => ({
         label: p.name,
         value: p._id
     }));
-
     const [errors, setErrors] = useState({});
 
     const handleChange = (target) => {
@@ -44,16 +40,28 @@ const RegisterForm = () => {
             [target.name]: target.value
         }));
     };
-
     const validatorConfig = {
         email: {
             isRequired: {
                 message: "Электронная почта обязательна для заполнения"
             },
-            isEmail: { message: "Email введён некорректно" }
+            isEmail: {
+                message: "Email введен некорректно"
+            }
+        },
+        name: {
+            isRequired: {
+                message: "Имя обязательно для заполнения"
+            },
+            min: {
+                message: "Имя должно состоять минимум из 3 символов",
+                value: 3
+            }
         },
         password: {
-            isRequired: { message: "Пароль обязательно для заполнения" },
+            isRequired: {
+                message: "Пароль обязателен для заполнения"
+            },
             isCapitalSymbol: {
                 message: "Пароль должен содержать хотя бы одну заглавную букву"
             },
@@ -77,24 +85,20 @@ const RegisterForm = () => {
             }
         }
     };
-
     useEffect(() => {
         validate();
     }, [data]);
-
     const validate = () => {
         const errors = validator(data, validatorConfig);
         setErrors(errors);
         return Object.keys(errors).length === 0;
     };
-
     const isValid = Object.keys(errors).length === 0;
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-
         const newData = {
             ...data,
             qualities: data.qualities.map((q) => q.value)
@@ -118,6 +122,13 @@ const RegisterForm = () => {
                 error={errors.email}
             />
             <TextField
+                label="Имя"
+                name="name"
+                value={data.name}
+                onChange={handleChange}
+                error={errors.name}
+            />
+            <TextField
                 label="Пароль"
                 type="password"
                 name="password"
@@ -126,7 +137,7 @@ const RegisterForm = () => {
                 error={errors.password}
             />
             <SelectField
-                label="Выберите Вашу профессию"
+                label="Выбери свою профессию"
                 defaultOption="Choose..."
                 options={professionsList}
                 name="profession"
@@ -161,9 +172,9 @@ const RegisterForm = () => {
                 Подтвердить <a>лицензионное соглашение</a>
             </CheckBoxField>
             <button
+                className="btn btn-primary w-100 mx-auto"
                 type="submit"
                 disabled={!isValid}
-                className="btn btn-primary w-100 mx-auto"
             >
                 Submit
             </button>

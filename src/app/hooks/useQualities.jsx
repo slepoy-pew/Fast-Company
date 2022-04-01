@@ -1,47 +1,38 @@
-import React, { useContext, useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import qualityService from "../service/quality.service";
+import PropTypes from "prop-types";
+import qualityService from "../services/quality.service";
 
-const QualitiesContex = React.createContext();
+const QualitiesContext = React.createContext();
 
 export const useQualities = () => {
-    return useContext(QualitiesContex);
+    return useContext(QualitiesContext);
 };
 
 export const QualitiesProvider = ({ children }) => {
     const [qualities, setQualities] = useState([]);
-    const [isLoading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isLoading, setLoading] = useState(true);
 
-    async function getQualitiesList() {
-        try {
-            const { content } = await qualityService.get();
-            setQualities(content);
-            setLoading(false);
-        } catch (error) {
-            errorCatcher(error);
-        }
-    }
     useEffect(() => {
-        getQualitiesList();
+        const getQualities = async () => {
+            try {
+                const { content } = await qualityService.fetchAll();
+                setQualities(content);
+                setLoading(false);
+            } catch (error) {
+                errorCatcher(error);
+            }
+        };
+        getQualities();
     }, []);
-
-    function getQualities(qualitiesID) {
-        if (qualitiesID.length === 1) {
-            return qualities.filter((q) => q._id === qualitiesID[0]);
-        } else if (qualitiesID.length > 1) {
-            return qualitiesID.map((id) => {
-                return qualities.filter((q) => q._id === id
-                );
-            });
-        }
-    }
+    const getQuality = (id) => {
+        return qualities.find((q) => q._id === id);
+    };
 
     function errorCatcher(error) {
         const { message } = error.response.data;
         setError(message);
-        setLoading(false);
     }
     useEffect(() => {
         if (error !== null) {
@@ -51,14 +42,21 @@ export const QualitiesProvider = ({ children }) => {
     }, [error]);
 
     return (
-        <QualitiesContex.Provider value={{ isLoading, qualities, getQualities }}>
+        <QualitiesContext.Provider
+            value={{
+                qualities,
+                getQuality,
+                isLoading
+            }}
+        >
             {children}
-        </QualitiesContex.Provider>
+        </QualitiesContext.Provider>
     );
 };
 
 QualitiesProvider.propTypes = {
     children: PropTypes.oneOfType([
-        PropTypes.arrayOf(PropTypes.node), PropTypes.node
+        PropTypes.arrayOf(PropTypes.node),
+        PropTypes.node
     ])
 };

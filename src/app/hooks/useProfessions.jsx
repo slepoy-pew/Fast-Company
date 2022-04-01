@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import professionService from "../service/profession.service";
+import ProfessionService from "../services/profession.service";
 import { toast } from "react-toastify";
 
 const ProfessionContext = React.createContext();
@@ -11,27 +11,8 @@ export const useProfessions = () => {
 
 export const ProfessionProvider = ({ children }) => {
     const [isLoading, setLoading] = useState(true);
-    const [profession, setProfession] = useState([]);
+    const [professions, setProfessions] = useState([]);
     const [error, setError] = useState(null);
-
-    useEffect(() => {
-        getProfessionsList();
-    }, []);
-
-    function getProfession(id) {
-        return profession.find((p) => p._id === id);
-    }
-
-    async function getProfessionsList() {
-        try {
-            const { content } = await professionService.get();
-            setProfession(content);
-            setLoading(false);
-        } catch (error) {
-            errorCatcher(error);
-        }
-    }
-
     useEffect(() => {
         if (error !== null) {
             toast(error);
@@ -39,14 +20,31 @@ export const ProfessionProvider = ({ children }) => {
         }
     }, [error]);
 
+    useEffect(() => {
+        getProfessionsList();
+    }, []);
     function errorCatcher(error) {
         const { message } = error.response.data;
         setError(message);
-        setLoading(false);
+    }
+    function getProfession(id) {
+        return professions.find((p) => p._id === id);
+    }
+
+    async function getProfessionsList() {
+        try {
+            const { content } = await ProfessionService.get();
+            setProfessions(content);
+            setLoading(false);
+        } catch (error) {
+            errorCatcher(error);
+        }
     }
 
     return (
-        <ProfessionContext.Provider value={{ isLoading, profession, getProfession }}>
+        <ProfessionContext.Provider
+            value={{ isLoading, professions, getProfession }}
+        >
             {children}
         </ProfessionContext.Provider>
     );
@@ -54,6 +52,7 @@ export const ProfessionProvider = ({ children }) => {
 
 ProfessionProvider.propTypes = {
     children: PropTypes.oneOfType([
-        PropTypes.arrayOf(PropTypes.node), PropTypes.node
+        PropTypes.arrayOf(PropTypes.node),
+        PropTypes.node
     ])
 };
