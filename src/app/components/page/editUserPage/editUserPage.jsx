@@ -1,43 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { validator } from "../../../utils/validator";
 import TextField from "../../common/form/textField";
 import SelectField from "../../common/form/selectField";
 import RadioField from "../../common/form/radioField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import BackHistoryButton from "../../common/backButton";
-import { useAuth } from "../../../hooks/useAuth";
-import { useQualities } from "../../../hooks/useQualities";
-import { useProfessions } from "../../../hooks/useProfessions";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    getQualities,
+    getQualitiesLoadingStatus
+} from "../../../store/qualities";
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from "../../../store/professions";
+import { getCurrentUserData, updateUser } from "../../../store/users";
 
 const EditUserPage = () => {
-    const history = useHistory();
     const [isLoading, setIsLoading] = useState(true);
     const [data, setData] = useState();
-    const { currentUser, updateUserData } = useAuth();
-    const { qualities, isLoading: qualitiesLoading } = useQualities();
+    const currentUser = useSelector(getCurrentUserData());
+    const dispatch = useDispatch();
+    const qualities = useSelector(getQualities());
+    const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
     const qualitiesList = qualities.map((q) => ({
         label: q.name,
         value: q._id
     }));
-    const { professions, isLoading: professionLoading } = useProfessions();
+    const professions = useSelector(getProfessions());
+    const professionLoading = useSelector(getProfessionsLoadingStatus());
     const professionsList = professions.map((p) => ({
         label: p.name,
         value: p._id
     }));
     const [errors, setErrors] = useState({});
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        await updateUserData({
-            ...data,
-            qualities: data.qualities.map((q) => q.value)
-        });
-
-        history.push(`/users/${currentUser._id}`);
+        dispatch(
+            updateUser({
+                ...data,
+                qualities: data.qualities.map((q) => q.value)
+            })
+        );
     };
+
     function getQualitiesListByIds(qualitiesIds) {
         const qualitiesArray = [];
         for (const qualId of qualitiesIds) {
@@ -50,6 +59,7 @@ const EditUserPage = () => {
         }
         return qualitiesArray;
     }
+
     const transformData = (data) => {
         const result = getQualitiesListByIds(data).map((qual) => ({
             label: qual.name,
@@ -65,6 +75,7 @@ const EditUserPage = () => {
             });
         }
     }, [professionLoading, qualitiesLoading, currentUser, data]);
+
     useEffect(() => {
         if (data && isLoading) {
             setIsLoading(false);
@@ -99,6 +110,7 @@ const EditUserPage = () => {
         return Object.keys(errors).length === 0;
     };
     const isValid = Object.keys(errors).length === 0;
+
     return (
         <div className="container mt-5">
             <BackHistoryButton />

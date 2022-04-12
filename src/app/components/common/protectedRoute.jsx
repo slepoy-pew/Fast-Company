@@ -1,14 +1,17 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
-import { useAuth } from "../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import { getIsLoggedIn } from "../../store/users";
+
 function ProtectedRoute({ component: Component, children, ...rest }) {
-    const { currentUser } = useAuth();
+    const isLoggedIn = useSelector(getIsLoggedIn());
+
     return (
         <Route
             {...rest}
             render={(props) => {
-                if (!currentUser) {
+                if (!isLoggedIn) {
                     return (
                         <Redirect
                             to={{
@@ -25,6 +28,7 @@ function ProtectedRoute({ component: Component, children, ...rest }) {
         />
     );
 }
+
 ProtectedRoute.propTypes = {
     component: PropTypes.func,
     location: PropTypes.object,
